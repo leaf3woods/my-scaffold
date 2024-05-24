@@ -83,15 +83,15 @@ namespace MyScaffold.WebApi.Controllers
         /// <summary>
         ///     更换自己的密码
         /// </summary>
-        /// <param name="passwardDto"></param>
+        /// <param name="passwordDto"></param>
         /// <returns></returns>
         [HttpPut]
         [Route("pwd")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ResponseWrapper<int>> ChangePassward(ChangePasswardDto passwardDto) =>
-            (await _userService.ChangePasswordAsync(passwardDto)).Wrap();
+        public async Task<ResponseWrapper<int>> ChangePassword(ChangePasswordDto passwordDto) =>
+            (await _userService.ChangePasswordAsync(passwordDto)).Wrap();
 
         /// <summary>
         ///     重置某个用户的密码
@@ -102,7 +102,7 @@ namespace MyScaffold.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Delete}.AllPWD")]
-        public async Task<ResponseWrapper<int>> ResetPassward(Guid userId) =>
+        public async Task<ResponseWrapper<int>> ResetPassword(Guid userId) =>
             (await _userService.ResetPasswordAsync(userId)).Wrap();
     }
 }

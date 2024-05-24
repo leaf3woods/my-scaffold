@@ -133,23 +133,23 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<CaptchaReadDto>(captcha);
         }
 
-        public async Task<int> ChangePasswordAsync(ChangePasswardDto passwardDto)
+        public async Task<int> ChangePasswordAsync(ChangePasswordDto passwordDto)
         {
-            var answer = Mapper.Map<Captcha>(passwardDto.Captcha);
+            var answer = Mapper.Map<Captcha>(passwordDto.Captcha);
 
             if (!SettingUtil.IsDevelopment
                 && (answer is null || !await _userDomainService.VerifyCaptchaAnswerAsync(answer)))
             {
                 throw new NotAcceptableException("captcha not exist or not correct");
             }
-            var user = await _userRepository.FindAsync(passwardDto.Username) ?? throw new NotFoundException("user not found");
-            var bytes = Convert.FromBase64String(passwardDto.OldPassword);
+            var user = await _userRepository.FindAsync(passwordDto.Username) ?? throw new NotFoundException("user not found");
+            var bytes = Convert.FromBase64String(passwordDto.OldPassword);
             if (!user.Verify(bytes))
             {
                 throw new NotAcceptableException("password error");
             }
 
-            _userDomainService.WithSalt(ref user, passwardDto.NewPassword);
+            _userDomainService.WithSalt(ref user, passwordDto.NewPassword);
             return await _userRepository.UpdateAsync(user);
         }
 

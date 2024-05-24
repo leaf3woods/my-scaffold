@@ -21,7 +21,7 @@ namespace MyScaffold.Application.Services.Base
 
         public Task<CaptchaReadDto> GenerateCaptchaAsync();
 
-        public Task<int> ChangePasswordAsync(ChangePasswardDto passwardDto);
+        public Task<int> ChangePasswordAsync(ChangePasswordDto passwordDto);
 
         public Task<int> ResetPasswordAsync(Guid userId);
     }

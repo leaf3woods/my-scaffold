@@ -68,10 +68,7 @@ namespace MyScaffold.Application.Services
         }
 
         [ScopeDefinition("get all supported scopes", $"{ManagedResource.Role}.{ManagedAction.Read}.Scope")]
-        public IEnumerable<RoleScopeReadDto> GetScopes()
-        {
-            var result = RequireScopeUtil.Scopes.Select(Mapper.Map<RoleScopeReadDto>);
-            return result;
-        }
+        public IEnumerable<RoleScopeReadDto> GetScopes() =>
+            Mapper.Map<IEnumerable<RoleScopeReadDto>>(RequireScopeUtil.Scopes);
     }
 }
