@@ -1,6 +1,7 @@
 ﻿using MyScaffold.Domain.Entities;
 using MyScaffold.Domain.Entities.Base;
 using Microsoft.EntityFrameworkCore;
+using CaseExtensions;
 
 namespace MyScaffold.Infrastructure.DbContexts
 {
@@ -34,6 +35,15 @@ namespace MyScaffold.Infrastructure.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            #region Table prefix
+
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                entityType.SetTableName(entityType.ClrType.Name.ToSnakeCase());
+            }
+
+            #endregion Table prefix
+
             #region soft delete filter
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())

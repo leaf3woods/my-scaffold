@@ -117,9 +117,12 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 // Add dbContext pool
-builder.Services.AddPooledDbContextFactory<PgDbContext>(options => options.UseNpgsql(
-    new NpgsqlDataSourceBuilder(builder.Configuration.GetConnectionString("Postgres")).Build()
-    ).EnableDetailedErrors());
+builder.Services.AddPooledDbContextFactory<PgDbContext>(options => {
+    options.UseNpgsql(new NpgsqlDataSourceBuilder(
+        builder.Configuration.GetConnectionString("Postgres")).Build()
+        ).EnableDetailedErrors();
+    options.UseSnakeCaseNamingConvention();
+});
 
 // Add mapper profiles
 builder.Services.AddAutoMapper(config => config.AddMaps(Assembly.Load("MyScaffold." + nameof(MyScaffold.Application))));
