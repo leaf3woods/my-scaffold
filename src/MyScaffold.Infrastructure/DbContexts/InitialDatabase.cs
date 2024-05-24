@@ -7,34 +7,36 @@ namespace MyScaffold.Infrastructure.DbContexts
     public class InitialDatabase
     {
         public InitialDatabase(
-            IDbContextFactory<PgDbContext> dbContextFactory,
+            ApiDbContext apiDbContext,
             ILogger<InitialDatabase> logger
             )
         {
-            _dbContextFactory = dbContextFactory;
+            _apiDbContext = apiDbContext;
             _logger = logger;
         }
 
-        private readonly IDbContextFactory<PgDbContext> _dbContextFactory;
+        private readonly ApiDbContext _apiDbContext;
         private readonly ILogger<InitialDatabase> _logger;
 
         public async Task Initialize()
         {
-            var context = await _dbContextFactory.CreateDbContextAsync();
-            context.Database.EnsureCreated();
-            await context.Database.MigrateAsync();
-            var scopes = await context.Scopes
+            if (!await _apiDbContext.Database.EnsureCreatedAsync())
+            {
+                _logger.LogInformation("database already created");
+                //await _apiDbContext.Database.MigrateAsync();
+            }
+            var scopes = await _apiDbContext.Scopes
                 .ToArrayAsync();
-            var transaction = await context.Database.BeginTransactionAsync();
+            var transaction = await _apiDbContext.Database.BeginTransactionAsync();
             try
             {
                 if (scopes.Length != Scope.Seeds.Length || scopes.Any(ss => Scope.Seeds.Contains(ss)))
                 {
-                    context.Scopes.RemoveRange(scopes);
-                    await context.SaveChangesAsync();
-                    await context.AddRangeAsync(Scope.Seeds);
+                    _apiDbContext.Scopes.RemoveRange(scopes);
+                    await _apiDbContext.SaveChangesAsync();
+                    await _apiDbContext.AddRangeAsync(Scope.Seeds);
                 }
-                var count = await context.SaveChangesAsync();
+                var count = await _apiDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                 _logger.LogInformation($"scope table generate succeed, with {count} new scopes");
             }

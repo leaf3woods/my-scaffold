@@ -59,7 +59,7 @@ namespace MyScaffold.Application.Dtos
         public string Answer { get; set; } = null!;
     }
 
-    public class ChangePasswardDto : UpdateDto
+    public class ChangePasswordDto : UpdateDto
     {
         public string Username { get; set; } = null!;
         public string OldPassword { get; set; } = null!;

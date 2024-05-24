@@ -8,11 +8,11 @@ using MyScaffold.Core;
 using MyScaffold.Core.Exceptions;
 using MyScaffold.Core.Utilities;
 using MyScaffold.Domain.Entities;
-using MyScaffold.Domain.Repositories;
 using MyScaffold.Domain.Services;
 using MyScaffold.Domain.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using MyScaffold.Infrastructure.DbContexts;
 
 namespace MyScaffold.Application.Services
 {
@@ -20,24 +20,22 @@ namespace MyScaffold.Application.Services
     public class UserService : BaseService, IUserService
     {
         public UserService(
-            IUserRepository userRepository,
-            IRoleRepository roleRepository,
+            ApiDbContext pgDbContext,
             IUserDomainService userDomainService
             )
         {
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
             _userDomainService = userDomainService;
+            _apiDbContext = pgDbContext;
         }
-
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
+        
+        private readonly ApiDbContext _apiDbContext;
         private readonly IUserDomainService _userDomainService;
 
         public async Task<UserReadDto?> RegisterAsync(UserRegisterDto registerDto)
         {
             var user = Mapper.Map<User>(registerDto);
-            var count = await _userRepository.CreateAsync(user);
+            await _apiDbContext.Users.AddAsync(user);
+            var count = await _apiDbContext.SaveChangesAsync();
             return count == 0 ? null : Mapper.Map<UserReadDto>(user);
         }
 
@@ -50,7 +48,8 @@ namespace MyScaffold.Application.Services
             {
                 throw new NotAcceptableException("captcha not found or not correct");
             }
-            var user = await _userRepository.FindAsync(credential.Username);
+            var user = await _apiDbContext.Users.Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Username == credential.Username);
             var bytes = Convert.FromBase64String(credential.Password);
 
             if (user is null || !user.Verify(bytes))
@@ -78,43 +77,44 @@ namespace MyScaffold.Application.Services
         [ScopeDefinition("delete user by id", $"{ManagedResource.User}.{ManagedAction.Delete}.One")]
         public async Task<int> DeleteAsync(Guid id)
         {
-            return await _userRepository.DeleteAsync(id);
+            var user = await _apiDbContext.Users.FindAsync(id);
+            if (user is not null)
+                _apiDbContext.Users.Remove(user);
+            return await _apiDbContext.SaveChangesAsync();
         }
 
         [ScopeDefinition("get single user by id", $"{ManagedResource.User}.{ManagedAction.Read}.One")]
         public async Task<UserReadDto?> GetUserAsync(Guid id)
         {
-            var user = await _userRepository
-                .GetQueryWhere(u => u.Id == id)
+            var user = await _apiDbContext.Users
+                .Where(u => u.Id == id)
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync();
-            var result = Mapper.Map<UserReadDto>(user);
-            return result;
+            return Mapper.Map<UserReadDto>(user);
         }
 
         [ScopeDefinition("get users where", $"{ManagedResource.User}.{ManagedAction.Read}.Query")]
         public async Task<IEnumerable<UserReadDto>> GetUsersWhereAsync(string? name = null)
         {
-            var users = await _userRepository
-                .GetQueryWhere(string.IsNullOrEmpty(name) ? null :
-                u => u.Username.Contains(name) || u.DisplayName.Contains(name))
+            var users = await _apiDbContext.Users
+                .Where(u => string.IsNullOrEmpty(name) || u.Username.Contains(name) ||
+                u.DisplayName == null || u.DisplayName.Contains(name))
                 .Include(u => u.Role)
                 .ToArrayAsync();
-            var results = Mapper.Map<IEnumerable<UserReadDto>>(users);
-            return results;
+            return Mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
         [ScopeDefinition("change user role", $"{ManagedResource.User}.{ManagedAction.Update}.Role")]
         public async Task<UserReadDto?> ChangeRoleAsync(Guid userId, Guid roleId)
         {
-            var user = (await _userRepository.FindAsync(userId)) ??
+            var user = (await _apiDbContext.Users.FindAsync(userId)) ??
                 throw new NotFoundException("user not found");
-            if (await _roleRepository.FindAsync(roleId) is null)
+            if (await _apiDbContext.Roles.FindAsync(roleId) is null)
                 throw new NotFoundException("role not found");
             user.RoleId = roleId;
-            var count = await _userRepository.UpdateAsync(user);
-            var result = count == 0 ? null : Mapper.Map<UserReadDto>(user);
-            return result;
+            _apiDbContext.Users.Update(user);
+            var count = await _apiDbContext.SaveChangesAsync();
+            return count == 0 ? null : Mapper.Map<UserReadDto>(user);
         }
 
         public async Task<CaptchaReadDto> GenerateCaptchaAsync()
@@ -133,34 +133,37 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<CaptchaReadDto>(captcha);
         }
 
-        public async Task<int> ChangePasswordAsync(ChangePasswardDto passwardDto)
+        public async Task<int> ChangePasswordAsync(ChangePasswordDto passwordDto)
         {
-            var answer = Mapper.Map<Captcha>(passwardDto.Captcha);
+            var answer = Mapper.Map<Captcha>(passwordDto.Captcha);
 
             if (!SettingUtil.IsDevelopment
                 && (answer is null || !await _userDomainService.VerifyCaptchaAnswerAsync(answer)))
             {
                 throw new NotAcceptableException("captcha not exist or not correct");
             }
-            var user = await _userRepository.FindAsync(passwardDto.Username) ?? throw new NotFoundException("user not found");
-            var bytes = Convert.FromBase64String(passwardDto.OldPassword);
+            var user = await _apiDbContext.Users.FindAsync(passwordDto.Username) ??
+                throw new NotFoundException("user not found");
+            var bytes = Convert.FromBase64String(passwordDto.OldPassword);
             if (!user.Verify(bytes))
             {
                 throw new NotAcceptableException("password error");
             }
 
-            _userDomainService.WithSalt(ref user, passwardDto.NewPassword);
-            return await _userRepository.UpdateAsync(user);
+            _userDomainService.WithSalt(ref user, passwordDto.NewPassword);
+            _apiDbContext.Users.Update(user);
+            return await _apiDbContext.SaveChangesAsync();
         }
 
         [ScopeDefinition("reset someone's password", $"{ManagedResource.User}.{ManagedAction.Update}.ResetPwd")]
         public async Task<int> ResetPasswordAsync(Guid userId)
         {
-            var user = await _userRepository.FindAsync(userId) ??
+            var user = await _apiDbContext.Users.FindAsync(userId) ??
                 throw new NotFoundException("user not found");
             var hash = CryptoUtil.Sha256("12345678");
             _userDomainService.WithSalt(ref user, hash);
-            return await _userRepository.UpdateAsync(user);
+            _apiDbContext.Users.Update(user);
+            return await _apiDbContext.SaveChangesAsync();
         }
     }
 }

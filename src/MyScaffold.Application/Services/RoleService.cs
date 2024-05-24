@@ -3,9 +3,9 @@ using MyScaffold.Application.Dtos;
 using MyScaffold.Application.Services.Base;
 using MyScaffold.Core.Exceptions;
 using MyScaffold.Domain.Entities;
-using MyScaffold.Domain.Repositories;
 using MyScaffold.Domain.Utilities;
 using Microsoft.EntityFrameworkCore;
+using MyScaffold.Infrastructure.DbContexts;
 
 namespace MyScaffold.Application.Services
 {
@@ -13,13 +13,12 @@ namespace MyScaffold.Application.Services
     public class RoleService : BaseService, IRoleService
     {
         public RoleService(
-            IRoleRepository roleRepository
-            )
+            ApiDbContext apiDbContext)
         {
-            _roleRepository = roleRepository;
+            _apiDbContext = apiDbContext;
         }
 
-        private readonly IRoleRepository _roleRepository;
+        private readonly ApiDbContext _apiDbContext;
 
         [ScopeDefinition("create a role", $"{ManagedResource.Role}.{ManagedAction.Create}.One")]
         public async Task<RoleReadDto?> CreateRoleAsync(RoleCreateDto roleDto)
@@ -28,18 +27,19 @@ namespace MyScaffold.Application.Services
             {
                 throw new NotAcceptableException("unsupported scope find");
             }
-            var role = Mapper.Map<Role>(roleDto);
-            var index = await _roleRepository.CreateAsync(role);
-            var dto = Mapper.Map<RoleReadDto>(role);
-            return index == 0 ? null : dto;
+            var entity = Mapper.Map<Role>(roleDto);
+            await _apiDbContext.Roles.AddAsync(entity);
+            var index = await _apiDbContext.SaveChangesAsync();
+            return index == 0 ? null : Mapper.Map<RoleReadDto>(entity);
         }
 
         [ScopeDefinition("get role info by id", $"{ManagedResource.Role}.{ManagedAction.Read}.One")]
         public async Task<RoleReadDto?> GetRoleAsync(Guid id)
         {
-            var role = await _roleRepository
-                .GetQueryWhere(r => r.Id == id)
+            var role = await _apiDbContext.Roles
+                .Where(r => r.Id == id)
                 .Include(r => r.Scopes)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
             return Mapper.Map<RoleReadDto>(role);
         }
@@ -47,9 +47,9 @@ namespace MyScaffold.Application.Services
         [ScopeDefinition("get all roles", $"{ManagedResource.Role}.{ManagedAction.Read}.All")]
         public async Task<IEnumerable<RoleReadDto>> GetRolesAsync()
         {
-            var roles = await _roleRepository
-                .GetQueryWhere()
+            var roles = await _apiDbContext.Roles
                 .Include(r => r.Scopes)
+                .AsNoTracking()
                 .ToArrayAsync();
             return Mapper.Map<IEnumerable<RoleReadDto>>(roles);
         }
@@ -61,9 +61,17 @@ namespace MyScaffold.Application.Services
             {
                 throw new NotAcceptableException("unsupported scope find");
             }
-            var role = (await _roleRepository.FindAsync(roleId)) ??
+            var role = (await _apiDbContext.Roles.FindAsync(roleId)) ??
                 throw new NotFoundException("role is not exist");
-            var result = await _roleRepository.UpdateAsync(role);
+            var scopes = await _apiDbContext.Scopes
+                .Where(s => s.RoleId == roleId).ToArrayAsync();
+            _apiDbContext.Scopes.RemoveRange(scopes);
+            var targets = await _apiDbContext.Scopes
+                .Where(s => scopeNames.Contains(s.Name))
+                .ToArrayAsync();
+            role.Scopes = targets;
+            _apiDbContext.Roles.Update(role);
+            var result = await _apiDbContext.SaveChangesAsync();
             return result;
         }
 

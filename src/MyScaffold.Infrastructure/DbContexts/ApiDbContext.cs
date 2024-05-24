@@ -5,9 +5,9 @@ using CaseExtensions;
 
 namespace MyScaffold.Infrastructure.DbContexts
 {
-    public class PgDbContext : DbContext
+    public class ApiDbContext : DbContext
     {
-        public PgDbContext(DbContextOptions<PgDbContext> options) : base(options)
+        public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
         {
         }
 

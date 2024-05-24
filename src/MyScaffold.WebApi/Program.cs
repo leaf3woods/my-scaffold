@@ -117,7 +117,7 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 // Add dbContext pool
-builder.Services.AddPooledDbContextFactory<PgDbContext>(options => {
+builder.Services.AddDbContextPool<ApiDbContext>(options => {
     options.UseNpgsql(new NpgsqlDataSourceBuilder(
         builder.Configuration.GetConnectionString("Postgres")).Build()
         ).EnableDetailedErrors();
