@@ -1,11 +1,12 @@
-﻿using System.Data.SqlTypes;
+﻿using MyScaffold.Core;
+using System.Data.SqlTypes;
 
 namespace MyScaffold.WebApi.Utilities
 {
     public class ResponseWrapper<TRead>
     {
         public string? Info { get; set; }
-        public TRead? Payload { get; set; }
+        public TRead? Data { get; set; }
         public int Status { get; set; } = StatusCodes.Status200OK;
 
         public static ResponseWrapper<TRead> Create(TRead read, string? info = null, int status = StatusCodes.Status200OK)
@@ -13,7 +14,7 @@ namespace MyScaffold.WebApi.Utilities
             return new ResponseWrapper<TRead>()
             {
                 Info = info,
-                Payload = read,
+                Data = read,
                 Status = status
             };
         }
@@ -26,7 +27,7 @@ namespace MyScaffold.WebApi.Utilities
             new()
             {
                 Info = info,
-                Payload = read,
+                Data = read,
                 Status = status
             };
 
@@ -35,7 +36,7 @@ namespace MyScaffold.WebApi.Utilities
             new()
             {
                 Info = info,
-                Payload = default(TNull),
+                Data = default(TNull),
                 Status = status
             };
 
@@ -44,7 +45,16 @@ namespace MyScaffold.WebApi.Utilities
             new()
             {
                 Info = info,
-                Payload = reads,
+                Data = reads,
+                Status = status
+            };
+
+        public static ResponseWrapper<PaginatedList<TRead>> Wrap<TRead>(this PaginatedList<TRead> reads,
+            string? info = null, int status = StatusCodes.Status200OK) =>
+            new()
+            {
+                Info = info,
+                Data = reads,
                 Status = status
             };
     }
