@@ -33,8 +33,13 @@ x86/
 bld/
 [Bb]in/
 [Oo]bj/
+
+# outputs logs
 [Ll]og/
 [Ll]ogs/
+
+# sercurty keys
+[Kk]eys
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
