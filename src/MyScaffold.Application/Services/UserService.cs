@@ -16,7 +16,7 @@ using System.Security.Claims;
 
 namespace MyScaffold.Application.Services
 {
-    [Scope("manage all user resources", ManagedResource.User)]
+    [ScopeDefinition("manage all user resources", ManagedResource.User)]
     public class UserService : BaseService, IUserService
     {
         public UserService(
@@ -69,20 +69,19 @@ namespace MyScaffold.Application.Services
             return token;
         }
 
-        [Scope("delete user by id", ManagedResource.User, ManagedAction.Delete, "Logout")]
         public async Task LogoutAsync(IEnumerable<Claim> claims)
         {
             var userId = claims.FirstOrDefault(c => c.Type == CustomClaimsType.UserId)!.Value;
             await _userDomainService.DeleteTokenAsync(Guid.Parse(userId)!);
         }
 
-        [Scope("delete user by id", ManagedResource.User, ManagedAction.Delete, ManagedItem.Id)]
+        [ScopeDefinition("delete user by id", $"{ManagedResource.User}.{ManagedAction.Delete}.One")]
         public async Task<int> DeleteAsync(Guid id)
         {
             return await _userRepository.DeleteAsync(id);
         }
 
-        [Scope("get single user by id", ManagedResource.User, ManagedAction.Read, ManagedItem.Id)]
+        [ScopeDefinition("get single user by id", $"{ManagedResource.User}.{ManagedAction.Read}.One")]
         public async Task<UserReadDto?> GetUserAsync(Guid id)
         {
             var user = await _userRepository
@@ -93,7 +92,7 @@ namespace MyScaffold.Application.Services
             return result;
         }
 
-        [Scope("get users where", ManagedResource.User, ManagedAction.Read, ManagedItem.All)]
+        [ScopeDefinition("get users where", $"{ManagedResource.User}.{ManagedAction.Read}.Query")]
         public async Task<IEnumerable<UserReadDto>> GetUsersWhereAsync(string? name = null)
         {
             var users = await _userRepository
@@ -105,7 +104,7 @@ namespace MyScaffold.Application.Services
             return results;
         }
 
-        [Scope("change user role", ManagedResource.User, ManagedAction.Update, "Role")]
+        [ScopeDefinition("change user role", $"{ManagedResource.User}.{ManagedAction.Update}.Role")]
         public async Task<UserReadDto?> ChangeRoleAsync(Guid userId, Guid roleId)
         {
             var user = (await _userRepository.FindAsync(userId)) ??
@@ -154,7 +153,7 @@ namespace MyScaffold.Application.Services
             return await _userRepository.UpdateAsync(user);
         }
 
-        [Scope("reset someone's passward", ManagedResource.User, ManagedAction.Update, "AllPWD")]
+        [ScopeDefinition("reset someone's password", $"{ManagedResource.User}.{ManagedAction.Update}.ResetPwd")]
         public async Task<int> ResetPasswordAsync(Guid userId)
         {
             var user = await _userRepository.FindAsync(userId) ??

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MyScaffold.Application.Services
 {
-    [Scope("manage all role resources", ManagedResource.Role)]
+    [ScopeDefinition("manage all role resources", ManagedResource.Role)]
     public class RoleService : BaseService, IRoleService
     {
         public RoleService(
@@ -21,21 +21,20 @@ namespace MyScaffold.Application.Services
 
         private readonly IRoleRepository _roleRepository;
 
-        [Scope("create a role", ManagedResource.Role, ManagedAction.Create, ManagedItem.Dto)]
+        [ScopeDefinition("create a role", $"{ManagedResource.Role}.{ManagedAction.Create}.One")]
         public async Task<RoleReadDto?> CreateRoleAsync(RoleCreateDto roleDto)
         {
-            if (!RequireScopeUtil.TryFillAll(roleDto.ScopeNames, out var fullScopes))
+            if (!RequireScopeUtil.Scopes.Any(s => !roleDto.ScopeNames.Contains(s.Name)))
             {
                 throw new NotAcceptableException("unsupported scope find");
             }
             var role = Mapper.Map<Role>(roleDto);
-            role.Scopes = fullScopes;
             var index = await _roleRepository.CreateAsync(role);
             var dto = Mapper.Map<RoleReadDto>(role);
             return index == 0 ? null : dto;
         }
 
-        [Scope("get role info by id", ManagedResource.Role, ManagedAction.Read, ManagedItem.Id)]
+        [ScopeDefinition("get role info by id", $"{ManagedResource.Role}.{ManagedAction.Read}.One")]
         public async Task<RoleReadDto?> GetRoleAsync(Guid id)
         {
             var role = await _roleRepository
@@ -45,7 +44,7 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<RoleReadDto>(role);
         }
 
-        [Scope("get all roles", ManagedResource.Role, ManagedAction.Read, ManagedItem.All)]
+        [ScopeDefinition("get all roles", $"{ManagedResource.Role}.{ManagedAction.Read}.All")]
         public async Task<IEnumerable<RoleReadDto>> GetRolesAsync()
         {
             var roles = await _roleRepository
@@ -55,21 +54,20 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<IEnumerable<RoleReadDto>>(roles);
         }
 
-        [Scope("change role manage scope", ManagedResource.Role, ManagedAction.Update, "Scopes")]
-        public async Task<int> ModifyRoleScopeAsync(Guid roleId, List<string> scopes)
+        [ScopeDefinition("change role manage scope", $"{ManagedResource.Role}.{ManagedAction.Update}.Scope")]
+        public async Task<int> ModifyRoleScopeAsync(Guid roleId, List<string> scopeNames)
         {
-            if (!RequireScopeUtil.TryFillAll(scopes, out var fullScopes))
+            if (!RequireScopeUtil.Scopes.Any(s => !scopeNames.Contains(s.Name)))
             {
                 throw new NotAcceptableException("unsupported scope find");
             }
             var role = (await _roleRepository.FindAsync(roleId)) ??
                 throw new NotFoundException("role is not exist");
-            role.Scopes = fullScopes;
             var result = await _roleRepository.UpdateAsync(role);
             return result;
         }
 
-        [Scope("get all supported scopes", ManagedResource.Role, ManagedAction.Read, "Scopes")]
+        [ScopeDefinition("get all supported scopes", $"{ManagedResource.Role}.{ManagedAction.Read}.Scope")]
         public IEnumerable<RoleScopeReadDto> GetScopes()
         {
             var result = RequireScopeUtil.Scopes.Select(Mapper.Map<RoleScopeReadDto>);

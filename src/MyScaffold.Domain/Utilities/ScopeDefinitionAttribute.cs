@@ -1,11 +1,11 @@
 ﻿namespace MyScaffold.Domain.Utilities
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method)]
-    public class ScopeAttribute : Attribute
+    public class ScopeDefinitionAttribute : Attribute
     {
-        public ScopeAttribute(string description, params string[] names)
+        public ScopeDefinitionAttribute(string description, string name)
         {
-            Name = string.Join('.', names);
+            Name = name;
             Description = description;
         }
 

@@ -1,12 +1,12 @@
 ﻿using MyScaffold.Application.Auth.Requirements;
-using MyScaffold.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
+using MyScaffold.Domain.ValueObjects;
 
 namespace MyScaffold.Application.Auth
 {
     public static class AuthPolicyExtension
     {
-        public static void AddPolicyExt(this AuthorizationOptions options, IEnumerable<Scope> scopes)
+        public static void AddPolicyExt(this AuthorizationOptions options, IEnumerable<ScopeDefinition> scopes)
         {
             foreach (var scope in scopes)
             {

@@ -1,21 +1,21 @@
-﻿using MyScaffold.Domain.Entities;
+﻿using MyScaffold.Domain.ValueObjects;
 using System.Reflection;
 
 namespace MyScaffold.Domain.Utilities
 {
     public static class RequireScopeUtil
     {
-        public static Scope[] Scopes { get; set; } = null!;
+        public static ScopeDefinition[] Scopes { get; set; } = null!;
 
         public static void Initialize()
         {
             Scopes = Assembly.Load("MyScaffold." + nameof(Application)).GetTypes()
                 .Where(type => type.Namespace == "MyScaffold." + nameof(Application) + ".Services")
-                .SelectMany(rqt => rqt.GetMethods().Select(m => m.GetCustomAttribute<ScopeAttribute>()).Append(rqt.GetCustomAttribute<ScopeAttribute>()))
+                .SelectMany(rqt => rqt.GetMethods().Select(m => m.GetCustomAttribute<ScopeDefinitionAttribute>()).Append(rqt.GetCustomAttribute<ScopeDefinitionAttribute>()))
                 .Select(attribute =>
                 {
                     return attribute is null ? null :
-                    new Scope
+                    new ScopeDefinition
                     {
                         Name = attribute!.Name,
                         Description = attribute!.Description
@@ -26,11 +26,11 @@ namespace MyScaffold.Domain.Utilities
 
         public static bool IsExist(string scopeName) => Scopes.Any(s => s.Name == scopeName);
 
-        public static Scope Fill(string scopeName) => Scopes.First(s => s.Name == scopeName);
+        public static ScopeDefinition Fill(string scopeName) => Scopes.First(s => s.Name == scopeName);
 
-        public static IEnumerable<Scope> FillAll(IEnumerable<string> scopeNames)
+        public static IEnumerable<ScopeDefinition> FillAll(IEnumerable<string> scopeNames)
         {
-            var result = new List<Scope>();
+            var result = new List<ScopeDefinition>();
             var enumerator = scopeNames.GetEnumerator();
             while (enumerator.MoveNext())
             {
@@ -47,9 +47,9 @@ namespace MyScaffold.Domain.Utilities
             return result;
         }
 
-        public static bool TryFillAll(IEnumerable<string> scopeNames, out List<Scope> fullScopes)
+        public static bool TryFillAll(IEnumerable<string> scopeNames, out List<ScopeDefinition> fullScopes)
         {
-            var result = new List<Scope>();
+            var result = new List<ScopeDefinition>();
             var enumerator = scopeNames.GetEnumerator();
             while (enumerator.MoveNext())
             {

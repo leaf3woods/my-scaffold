@@ -1,31 +1,48 @@
 ﻿using MyScaffold.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace MyScaffold.Infrastructure.DbContexts
 {
     public class InitialDatabase
     {
-        public InitialDatabase(IDbContextFactory<PgDbContext> dbContextFactory)
+        public InitialDatabase(
+            IDbContextFactory<PgDbContext> dbContextFactory,
+            ILogger<InitialDatabase> logger
+            )
         {
             _dbContextFactory = dbContextFactory;
+            _logger = logger;
         }
 
         private readonly IDbContextFactory<PgDbContext> _dbContextFactory;
+        private readonly ILogger<InitialDatabase> _logger;
 
         public async Task Initialize()
         {
             var context = await _dbContextFactory.CreateDbContextAsync();
             context.Database.EnsureCreated();
             await context.Database.MigrateAsync();
-            foreach (var seed in Scope.Seeds)
+            var scopes = await context.Scopes
+                .ToArrayAsync();
+            var transaction = await context.Database.BeginTransactionAsync();
+            try
             {
-                var entity = await context.Scopes.FirstOrDefaultAsync(sc => sc.Id == seed.Id);
-                if (entity is null)
+                if (scopes.Length != Scope.Seeds.Length || scopes.Any(ss => Scope.Seeds.Contains(ss)))
                 {
-                    await context.Scopes.AddAsync(seed);
+                    context.Scopes.RemoveRange(scopes);
+                    await context.SaveChangesAsync();
+                    await context.AddRangeAsync(Scope.Seeds);
                 }
+                var count = await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                _logger.LogInformation($"scope table generate succeed, with {count} new scopes");
             }
-            await context.SaveChangesAsync();
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }
