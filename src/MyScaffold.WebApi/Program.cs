@@ -56,7 +56,7 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new ECDsaSecurityKey(CryptoUtil.PublicECDsa),    // Use ECDsa
-        ValidAlgorithms = new[] { SecurityAlgorithms.EcdsaSha256 },
+        ValidAlgorithms = [SecurityAlgorithms.EcdsaSha256],
         ValidateIssuer = true,
         ValidIssuer = SettingUtil.Jwt.Issuer,
         ValidateAudience = true,
@@ -80,13 +80,13 @@ builder.Services.AddSwaggerGen(option =>
     option.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     option.SwaggerDoc("v1", new OpenApiInfo
     {
-        Description = "API service for jia er hospital",
-        Title = "bewatec care service v1",
+        Description = "API service of xxx",
+        Title = "xxx service v1",
         Contact = new OpenApiContact
         {
-            Name = "bewatec",
-            Email = "sales@bewatec.com.cn",
-            Url = new Uri("https://www.bewatec.com.cn")
+            Name = "yes",
+            Email = "en-yes@outlook.com",
+            Url = new Uri("https://github.com/leaf3woods")
         }
     });
     option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
