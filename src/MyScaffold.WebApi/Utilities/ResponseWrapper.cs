@@ -36,7 +36,7 @@ namespace MyScaffold.WebApi.Utilities
             new()
             {
                 Info = info,
-                Data = default(TNull),
+                Data = default,
                 Status = status
             };
 
