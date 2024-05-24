@@ -55,7 +55,7 @@ namespace MyScaffold.WebApi.Controllers
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task Logout() => await _userService.LogoutAsync();
+        public async Task Logout() => await _userService.LogoutAsync(HttpContext.User.Claims);
 
         /// <summary>
         ///     用户注册

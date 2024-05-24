@@ -11,7 +11,6 @@ using MyScaffold.Domain.Entities;
 using MyScaffold.Domain.Repositories;
 using MyScaffold.Domain.Services;
 using MyScaffold.Domain.Utilities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -23,20 +22,17 @@ namespace MyScaffold.Application.Services
         public UserService(
             IUserRepository userRepository,
             IRoleRepository roleRepository,
-            IUserDomainService userDomainService,
-            IHttpContextAccessor httpContextAccessor
+            IUserDomainService userDomainService
             )
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _userDomainService = userDomainService;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUserDomainService _userDomainService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public async Task<UserReadDto?> RegisterAsync(UserRegisterDto registerDto)
         {
@@ -74,10 +70,9 @@ namespace MyScaffold.Application.Services
         }
 
         [Scope("delete user by id", ManagedResource.User, ManagedAction.Delete, "Logout")]
-        public async Task LogoutAsync()
+        public async Task LogoutAsync(IEnumerable<Claim> claims)
         {
-            var userId = _httpContextAccessor.HttpContext.User.Claims
-                .FirstOrDefault(c => c.Type == CustomClaimsType.UserId)!.Value;
+            var userId = claims.FirstOrDefault(c => c.Type == CustomClaimsType.UserId)!.Value;
             await _userDomainService.DeleteTokenAsync(Guid.Parse(userId)!);
         }
 

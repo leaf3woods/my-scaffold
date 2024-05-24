@@ -1,4 +1,5 @@
 ﻿using MyScaffold.Application.Dtos;
+using System.Security.Claims;
 
 namespace MyScaffold.Application.Services.Base
 {
@@ -8,7 +9,7 @@ namespace MyScaffold.Application.Services.Base
 
         public Task<string> LoginAsync(UserLoginDto credential);
 
-        public Task LogoutAsync();
+        public Task LogoutAsync(IEnumerable<Claim> claims);
 
         public Task<int> DeleteAsync(Guid id);
 

@@ -5,39 +5,37 @@ using MyScaffold.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
-namespace MyScaffold.Application.Auth.AuthHandler
+
+namespace BcsJiaer.Application.Auth.AuthHandler
 {
-    public class UserRequireHandler : AuthorizationHandler<UserRequireScope>
+    public class CustomRequireHandler : AuthorizationHandler<CustomRequireScope>
     {
-        public UserRequireHandler(
-            IUserService userService,
+        public CustomRequireHandler(
             IRoleService roleService,
-            ILogger<UserRequireHandler> logger
+            ILogger<CustomRequireHandler> logger
             )
         {
-            _userService = userService;
             _roleService = roleService;
             _logger = logger;
         }
 
-        private readonly IUserService _userService;
         private readonly IRoleService _roleService;
         private readonly ILogger _logger;
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, UserRequireScope requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CustomRequireScope requirement)
         {
             var dict = context.User.Claims.ToDictionary(key => key.Type, value => value.Value);
             if (!dict.TryGetValue(CustomClaimsType.UserId, out var uId) ||
                 !dict.TryGetValue(CustomClaimsType.RoleId, out var rId))
             {
-                _logger.LogWarning("unknow token claims");
-                context.Fail();
+                _logger.LogWarning("invalid token claims");
+                context.Fail(new AuthorizationFailureReason(this, "invalid claims"));
                 return;
             }
             var userId = Guid.Parse(uId);
             var roleId = Guid.Parse(rId);
 
-            if (roleId == Role.DevRole.Id || roleId == Role.SuperRole.Id)
+            if (roleId == Role.SuperRole.Id)
             {
                 context.Succeed(requirement);
                 return;
@@ -46,25 +44,18 @@ namespace MyScaffold.Application.Auth.AuthHandler
             var role = await _roleService.GetRoleAsync(roleId);
             if (role is null)
             {
-                _logger.LogWarning("a token with unknow role");
-                context.Fail();
-                return;
-            }
-            var user = await _userService.GetUserAsync(userId);
-            if (user is null)
-            {
-                _logger.LogWarning("a token with unknow user");
-                context.Fail();
+                _logger.LogWarning("a token with invalid role");
+                context.Fail(new AuthorizationFailureReason(this, "unknow role"));
                 return;
             }
 
             if (role.Scopes.Any(s => requirement.Scope.Contains(s.Name)))
             {
-                _logger.LogInformation("scope match success");
+                _logger.LogTrace("scope match success");
                 context.Succeed(requirement);
                 return;
             }
-            context.Fail();
+            context.Fail(new AuthorizationFailureReason(this, "no authorization"));
         }
     }
 }
