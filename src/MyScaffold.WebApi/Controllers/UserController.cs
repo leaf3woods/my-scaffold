@@ -30,61 +30,68 @@ namespace MyScaffold.WebApi.Controllers
 
         /// <summary>
         ///     获取指定Id的用户
+        ///     auth: super
         /// </summary>
-        /// <param name="userId">GUID</param>
-        /// <returns></returns>
+        /// <param name="userId">用户guid</param>
+        /// <returns>用户详情</returns>
         [HttpGet]
         [Authorize]
         [Route("{userId:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Read}.{ManagedItem.Id}")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Read}.Id")]
         public async Task<ResponseWrapper<UserReadDto?>> GetUser(Guid userId) =>
             (await _userService.GetUserAsync(userId)).Wrap();
 
         /// <summary>
         ///     模糊匹配用户名和昵称
+        ///     auth: super
         /// </summary>
-        /// <returns></returns>
+        /// <param name="name">用户名或昵称</param>
+        /// <returns>匹配的用户列表</returns>
         [HttpGet]
         [Route("where")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Read}.{ManagedItem.All}")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Read}.Query")]
         public async Task<ResponseWrapper<IEnumerable<UserReadDto>>> GetUsers(string? name = null) =>
             (await _userService.GetUsersWhereAsync(name)).Wrap();
 
         /// <summary>
         ///     删除用户
+        ///     auth: super
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="userId">用户guid</param>
+        /// <returns>已删除用户数</returns>
         [HttpDelete]
         [Route("{userId:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Delete}.{ManagedItem.Id}")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Delete}.Id")]
         public async Task<ResponseWrapper<int>> Delete(Guid userId) =>
             (await _userService.DeleteAsync(userId)).Wrap();
 
         /// <summary>
-        ///     切换权限
+        ///     切换角色
+        ///     auth: super
         /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="roleId"></param>
-        /// <returns></returns>
+        /// <param name="userId">用户guid</param>
+        /// <param name="roleId">角色guid</param>
+        /// <returns>用户更改后的详情</returns>
         [HttpPost]
         [Route("{userId:guid}/role/{roleId:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Update}.Role")]
         public async Task<ResponseWrapper<UserReadDto?>> ModifyRole(Guid userId, Guid roleId) =>
             (await _userService.ChangeRoleAsync(userId, roleId)).Wrap();
 
         /// <summary>
         ///     更换自己的密码
+        ///     auth: anonymous
         /// </summary>
-        /// <param name="passwordDto"></param>
-        /// <returns></returns>
+        /// <param name="passwordDto">用于验证用户身份</param>
+        /// <returns>更换密码状态</returns>
         [HttpPut]
         [Route("pwd")]
         [AllowAnonymous]
@@ -95,13 +102,15 @@ namespace MyScaffold.WebApi.Controllers
 
         /// <summary>
         ///     重置某个用户的密码
+        ///     auth: admin
         /// </summary>
-        /// <returns></returns>
+        /// <param name="userId">用户guid</param>
+        /// <returns>重置状态</returns>
         [HttpPut]
         [Route("{userId}/pwd")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Delete}.AllPWD")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Update}.ResetPwd")]
         public async Task<ResponseWrapper<int>> ResetPassword(Guid userId) =>
             (await _userService.ResetPasswordAsync(userId)).Wrap();
     }

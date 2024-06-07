@@ -14,12 +14,4 @@
         public const string Blog = "Blog";
         public const string Role = "Role";
     }
-
-    public static class ManagedItem
-    {
-        public const string Id = "Id";
-        public const string Limit = "Limit";
-        public const string All = "All";
-        public const string Dto = "Dto";
-    }
 }

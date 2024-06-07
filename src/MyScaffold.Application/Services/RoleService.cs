@@ -20,7 +20,7 @@ namespace MyScaffold.Application.Services
 
         private readonly ApiDbContext _apiDbContext;
 
-        [ScopeDefinition("create a role", $"{ManagedResource.Role}.{ManagedAction.Create}.One")]
+        [ScopeDefinition("create a role", $"{ManagedResource.Role}.{ManagedAction.Create}.New")]
         public async Task<RoleReadDto?> CreateRoleAsync(RoleCreateDto roleDto)
         {
             if (!RequireScopeUtil.Scopes.Any(s => !roleDto.ScopeNames.Contains(s.Name)))
@@ -33,7 +33,7 @@ namespace MyScaffold.Application.Services
             return index == 0 ? null : Mapper.Map<RoleReadDto>(entity);
         }
 
-        [ScopeDefinition("get role info by id", $"{ManagedResource.Role}.{ManagedAction.Read}.One")]
+        [ScopeDefinition("get role info by id", $"{ManagedResource.Role}.{ManagedAction.Read}.Id")]
         public async Task<RoleReadDto?> GetRoleAsync(Guid id)
         {
             var role = await _apiDbContext.Roles
@@ -54,7 +54,7 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<IEnumerable<RoleReadDto>>(roles);
         }
 
-        [ScopeDefinition("change role manage scope", $"{ManagedResource.Role}.{ManagedAction.Update}.Scope")]
+        [ScopeDefinition("change role manage scope", $"{ManagedResource.Role}.{ManagedAction.Update}.Scopes")]
         public async Task<int> ModifyRoleScopeAsync(Guid roleId, List<string> scopeNames)
         {
             if (!RequireScopeUtil.Scopes.Any(s => !scopeNames.Contains(s.Name)))
@@ -75,7 +75,7 @@ namespace MyScaffold.Application.Services
             return result;
         }
 
-        [ScopeDefinition("get all supported scopes", $"{ManagedResource.Role}.{ManagedAction.Read}.Scope")]
+        [ScopeDefinition("get all supported scopes", $"{ManagedResource.Role}.{ManagedAction.Read}.Scopes")]
         public IEnumerable<RoleScopeReadDto> GetScopes() =>
             Mapper.Map<IEnumerable<RoleScopeReadDto>>(RequireScopeUtil.Scopes);
     }

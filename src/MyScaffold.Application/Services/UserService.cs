@@ -74,7 +74,7 @@ namespace MyScaffold.Application.Services
             await _userDomainService.DeleteTokenAsync(Guid.Parse(userId)!);
         }
 
-        [ScopeDefinition("delete user by id", $"{ManagedResource.User}.{ManagedAction.Delete}.One")]
+        [ScopeDefinition("delete user by id", $"{ManagedResource.User}.{ManagedAction.Delete}.Id")]
         public async Task<int> DeleteAsync(Guid id)
         {
             var user = await _apiDbContext.Users.FindAsync(id);
@@ -83,7 +83,7 @@ namespace MyScaffold.Application.Services
             return await _apiDbContext.SaveChangesAsync();
         }
 
-        [ScopeDefinition("get single user by id", $"{ManagedResource.User}.{ManagedAction.Read}.One")]
+        [ScopeDefinition("get single user by id", $"{ManagedResource.User}.{ManagedAction.Read}.Id")]
         public async Task<UserReadDto?> GetUserAsync(Guid id)
         {
             var user = await _apiDbContext.Users

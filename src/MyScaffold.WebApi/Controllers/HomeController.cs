@@ -24,8 +24,9 @@ namespace MyScaffold.WebApi.Controllers
 
         /// <summary>
         ///     获取验证码
+        ///     auth: anonymous
         /// </summary>
-        /// <returns></returns>
+        /// <returns>base64验证码图片</returns>
         [HttpGet]
         [Route("captcha")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -35,9 +36,10 @@ namespace MyScaffold.WebApi.Controllers
 
         /// <summary>
         ///     用户登录
+        ///     auth: anonymous
         /// </summary>
-        /// <param name="credential"></param>
-        /// <returns></returns>
+        /// <param name="credential">登录验证内容</param>
+        /// <returns>登录状态</returns>
         [HttpPost]
         [Route("login")]
         [AllowAnonymous]
@@ -48,20 +50,22 @@ namespace MyScaffold.WebApi.Controllers
 
         /// <summary>
         ///     用户登出
+        ///     auth: user
         /// </summary>
-        /// <returns></returns>
+        /// <returns>void</returns>
         [HttpPost]
         [Route("logout")]
-        [AllowAnonymous]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task Logout() => await _userService.LogoutAsync(HttpContext.User.Claims);
 
         /// <summary>
         ///     用户注册
+        ///     auth: anonymous
         /// </summary>
-        /// <param name="registerDto"></param>
-        /// <returns></returns>
+        /// <param name="registerDto">注册必要字段</param>
+        /// <returns>成功注册的用户/null</returns>
         [HttpPost]
         [Route("register")]
         [AllowAnonymous]
