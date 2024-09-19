@@ -14,9 +14,18 @@ namespace MyScaffold.Core.Utilities
             Jwt.Audience = jwtSetting.GetValue<string>(nameof(Jwt.Audience)) ??
                 throw new Exception("missing audience in jwt setting section");
             Jwt.ExpireMin = TimeSpan.FromMinutes(jwtSetting.GetValue<int>(nameof(Jwt.ExpireMin)));
+
+            var apiInfo = configuration.GetSection(nameof(OpenApiInfo));
+            OpenApi.Description = apiInfo.GetValue<string>(nameof(OpenApi.Description)) ?? throw new Exception("config not found");
+            OpenApi.Title = apiInfo.GetValue<string>(nameof(OpenApi.Title)) ?? throw new Exception("config not found");
+            OpenApi.Name = apiInfo.GetValue<string>(nameof(OpenApi.Name)) ?? throw new Exception("config not found");
+            OpenApi.Email = apiInfo.GetValue<string>(nameof(OpenApi.Email)) ?? throw new Exception("config not found");
+            OpenApi.Url = apiInfo.GetValue<string>(nameof(OpenApi.Url)) ?? throw new Exception("config not found");
         }
 
         public static JwtSettings Jwt { get; private set; } = new JwtSettings();
+        public static OpenApiInfo OpenApi { get; private set; } = new OpenApiInfo();
+
 
         public static bool IsDevelopment { get; private set; } = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
@@ -26,6 +35,15 @@ namespace MyScaffold.Core.Utilities
             public string Issuer { get; set; } = null!;
             public string Audience { get; set; } = null!;
             public TimeSpan ExpireMin { get; set; }
+        }
+
+        public class OpenApiInfo
+        {
+            public string Description { get; set; } = null!;
+            public string Title { get; set; } = null!;
+            public string Name { get; set; } = null!;
+            public string Email { get; set; } = null!;
+            public string Url { get; set; } = null!;
         }
     }
 }

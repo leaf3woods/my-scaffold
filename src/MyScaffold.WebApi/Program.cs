@@ -80,13 +80,13 @@ builder.Services.AddSwaggerGen(option =>
     option.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
     option.SwaggerDoc("v1", new OpenApiInfo
     {
-        Description = "API service of xxx",
-        Title = "xxx service v1",
+        Description = SettingUtil.OpenApi.Description,
+        Title = SettingUtil.OpenApi.Title,
         Contact = new OpenApiContact
         {
-            Name = "yes",
-            Email = "en-yes@outlook.com",
-            Url = new Uri("https://github.com/leaf3woods")
+            Name = SettingUtil.OpenApi.Name,
+            Email = SettingUtil.OpenApi.Email,
+            Url = new Uri(SettingUtil.OpenApi.Url)
         }
     });
     option.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
