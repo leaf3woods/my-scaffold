@@ -18,6 +18,7 @@ namespace MyScaffold.Application.Utilities.InjectionModules
             builder.Register(context => ConnectionMultiplexer.Connect(context.Resolve<IConfiguration>().GetConnectionString("Redis")!))
                 .AsImplementedInterfaces()
                 .SingleInstance();
+            builder.RegisterGeneric(typeof(PaginatedListConverter<,>));
         }
     }
 }
