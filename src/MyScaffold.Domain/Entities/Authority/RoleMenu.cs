@@ -1,7 +1,7 @@
 ﻿using MyScaffold.Domain.Entities.Base;
 using MyScaffold.Domain.Entities.Login;
 
-namespace MyScaffold.Domain.Entities.Menus
+namespace MyScaffold.Domain.Entities.Authority
 {
     public class RoleMenu : IncrementEntity
     {

@@ -20,7 +20,7 @@ namespace MyScaffold.Application.Services
 
         private readonly ApiDbContext _apiDbContext;
 
-        [ScopeDefinition("create a role", $"{ManagedResource.Role}.{ManagedAction.Create}.New")]
+        [ScopeDefinition("create a role", $"{ManagedResource.Role}.{ManagedAction.Add}.New")]
         public async Task<RoleReadDto?> CreateRoleAsync(RoleCreateDto roleDto)
         {
             if (!RequireScopeUtil.Scopes.Any(s => !roleDto.ScopeNames.Contains(s.Name)))
@@ -33,7 +33,7 @@ namespace MyScaffold.Application.Services
             return index == 0 ? null : Mapper.Map<RoleReadDto>(entity);
         }
 
-        [ScopeDefinition("get role info by id", $"{ManagedResource.Role}.{ManagedAction.Read}.Id")]
+        [ScopeDefinition("get role info by id", $"{ManagedResource.Role}.{ManagedAction.Get}.Id")]
         public async Task<RoleReadDto?> GetRoleAsync(Guid id)
         {
             var role = await _apiDbContext.Roles
@@ -44,7 +44,7 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<RoleReadDto>(role);
         }
 
-        [ScopeDefinition("get all roles", $"{ManagedResource.Role}.{ManagedAction.Read}.All")]
+        [ScopeDefinition("get all roles", $"{ManagedResource.Role}.{ManagedAction.Get}.All")]
         public async Task<IEnumerable<RoleReadDto>> GetRolesAsync()
         {
             var roles = await _apiDbContext.Roles
@@ -54,7 +54,7 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<IEnumerable<RoleReadDto>>(roles);
         }
 
-        [ScopeDefinition("change role manage scope", $"{ManagedResource.Role}.{ManagedAction.Update}.Scopes")]
+        [ScopeDefinition("change role manage scope", $"{ManagedResource.Role}.{ManagedAction.Put}.Scopes")]
         public async Task<int> ModifyRoleScopeAsync(Guid roleId, List<string> scopeNames)
         {
             if (!RequireScopeUtil.Scopes.Any(s => !scopeNames.Contains(s.Name)))
@@ -75,7 +75,7 @@ namespace MyScaffold.Application.Services
             return result;
         }
 
-        [ScopeDefinition("get all supported scopes", $"{ManagedResource.Role}.{ManagedAction.Read}.Scopes")]
+        [ScopeDefinition("get all supported scopes", $"{ManagedResource.Role}.{ManagedAction.Get}.Scopes")]
         public IEnumerable<RoleScopeReadDto> GetScopes() =>
             Mapper.Map<IEnumerable<RoleScopeReadDto>>(RequireScopeUtil.Scopes);
     }

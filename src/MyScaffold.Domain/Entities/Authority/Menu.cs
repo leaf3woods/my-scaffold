@@ -1,6 +1,6 @@
 ﻿using MyScaffold.Domain.Entities.Base;
 
-namespace MyScaffold.Domain.Entities.Menus
+namespace MyScaffold.Domain.Entities.Authority
 {
     public class Menu : UniversalEntity, ISoftDelete
     {

@@ -39,7 +39,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("{userId:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Read}.Id")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Get}.Id")]
         public async Task<ResponseWrapper<UserReadDto?>> GetUser(Guid userId) =>
             (await _userService.GetUserAsync(userId)).Wrap();
 
@@ -53,7 +53,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("where")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Read}.Query")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Get}.Query")]
         public async Task<ResponseWrapper<IEnumerable<UserReadDto>>> GetUsers(string? name = null) =>
             (await _userService.GetUsersWhereAsync(name)).Wrap();
 
@@ -82,7 +82,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("{userId:guid}/role/{roleId:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Update}.Role")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Put}.Role")]
         public async Task<ResponseWrapper<UserReadDto?>> ModifyRole(Guid userId, Guid roleId) =>
             (await _userService.ChangeRoleAsync(userId, roleId)).Wrap();
 
@@ -110,7 +110,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("{userId}/pwd")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Update}.ResetPwd")]
+        [Authorize(Policy = $"{ManagedResource.User}.{ManagedAction.Put}.ResetPwd")]
         public async Task<ResponseWrapper<int>> ResetPassword(Guid userId) =>
             (await _userService.ResetPasswordAsync(userId)).Wrap();
     }

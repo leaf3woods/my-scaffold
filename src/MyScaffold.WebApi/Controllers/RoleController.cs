@@ -38,7 +38,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("{roleId:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Read}.Id")]
+        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Get}.Id")]
         public async Task<ResponseWrapper<RoleReadDto?>> GetRole(Guid roleId) =>
             (await _roleService.GetRoleAsync(roleId)).Wrap();
 
@@ -51,7 +51,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("all")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Read}.All")]
+        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Get}.All")]
         public async Task<ResponseWrapper<IEnumerable<RoleReadDto>>> GetRoles() =>
             (await _roleService.GetRolesAsync()).Wrap();
 
@@ -64,7 +64,7 @@ namespace MyScaffold.WebApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Create}.New")]
+        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Add}.New")]
         public async Task<ResponseWrapper<RoleReadDto?>> CreateRole(RoleCreateDto roleDto) =>
             (await _roleService.CreateRoleAsync(roleDto)).Wrap();
 
@@ -79,7 +79,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("{roleId:guid}/scopes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Update}.Scopes")]
+        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Put}.Scopes")]
         public async Task<ResponseWrapper<int>> ModifyRoleScopeAsync(Guid roleId, List<string> scopes) =>
             (await _roleService.ModifyRoleScopeAsync(roleId, scopes)).Wrap();
 
@@ -92,7 +92,7 @@ namespace MyScaffold.WebApi.Controllers
         [Route("scopes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Read}.Scopes")]
+        [Authorize(Policy = $"{ManagedResource.Role}.{ManagedAction.Get}.Scopes")]
         public ResponseWrapper<IEnumerable<RoleScopeReadDto>> GetSupportedScopes() =>
             _roleService.GetScopes().Wrap();
     }

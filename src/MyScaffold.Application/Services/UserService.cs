@@ -83,7 +83,7 @@ namespace MyScaffold.Application.Services
             return await _apiDbContext.SaveChangesAsync();
         }
 
-        [ScopeDefinition("get single user by id", $"{ManagedResource.User}.{ManagedAction.Read}.Id")]
+        [ScopeDefinition("get single user by id", $"{ManagedResource.User}.{ManagedAction.Get}.Id")]
         public async Task<UserReadDto?> GetUserAsync(Guid id)
         {
             var user = await _apiDbContext.Users
@@ -93,7 +93,7 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<UserReadDto>(user);
         }
 
-        [ScopeDefinition("get users where", $"{ManagedResource.User}.{ManagedAction.Read}.Query")]
+        [ScopeDefinition("get users where", $"{ManagedResource.User}.{ManagedAction.Get}.Query")]
         public async Task<IEnumerable<UserReadDto>> GetUsersWhereAsync(string? name = null)
         {
             var users = await _apiDbContext.Users
@@ -104,7 +104,7 @@ namespace MyScaffold.Application.Services
             return Mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
-        [ScopeDefinition("change user role", $"{ManagedResource.User}.{ManagedAction.Update}.Role")]
+        [ScopeDefinition("change user role", $"{ManagedResource.User}.{ManagedAction.Put}.Role")]
         public async Task<UserReadDto?> ChangeRoleAsync(Guid userId, Guid roleId)
         {
             var user = (await _apiDbContext.Users.FindAsync(userId)) ??
@@ -155,7 +155,7 @@ namespace MyScaffold.Application.Services
             return await _apiDbContext.SaveChangesAsync();
         }
 
-        [ScopeDefinition("reset someone's password", $"{ManagedResource.User}.{ManagedAction.Update}.ResetPwd")]
+        [ScopeDefinition("reset someone's password", $"{ManagedResource.User}.{ManagedAction.Put}.ResetPwd")]
         public async Task<int> ResetPasswordAsync(Guid userId)
         {
             var user = await _apiDbContext.Users.FindAsync(userId) ??

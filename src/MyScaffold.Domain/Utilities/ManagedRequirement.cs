@@ -2,16 +2,16 @@
 {
     public static class ManagedAction
     {
-        public const string Create = "Create";
-        public const string Update = "Update";
-        public const string Delete = "Delete";
-        public const string Read = "Read";
+        public const string Add = "add";
+        public const string Put = "put";
+        public const string Delete = "delete";
+        public const string Get = "get";
     }
 
     public static class ManagedResource
     {
-        public const string User = "User";
-        public const string Blog = "Blog";
-        public const string Role = "Role";
+        public const string User = "user";
+        public const string Role = "role";
+        public const string Menu = "menu";
     }
 }

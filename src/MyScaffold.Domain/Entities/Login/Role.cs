@@ -1,5 +1,5 @@
 ﻿using MyScaffold.Domain.Entities.Base;
-using MyScaffold.Domain.Entities.Menus;
+using MyScaffold.Domain.Entities.Authority;
 
 namespace MyScaffold.Domain.Entities.Login
 {

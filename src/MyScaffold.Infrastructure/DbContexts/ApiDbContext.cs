@@ -3,7 +3,7 @@ using MyScaffold.Domain.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using CaseExtensions;
 using MyScaffold.Domain.Entities.Login;
-using MyScaffold.Domain.Entities.Menus;
+using MyScaffold.Domain.Entities.Authority;
 
 namespace MyScaffold.Infrastructure.DbContexts
 {
@@ -18,6 +18,7 @@ namespace MyScaffold.Infrastructure.DbContexts
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Scope> Scopes { get; set; }
+        public DbSet<Menu> Menus { get; set; }
 
         #endregion dbsets
 
@@ -37,23 +38,23 @@ namespace MyScaffold.Infrastructure.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            #region Table prefix
+            #region table prefix
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 entityType.SetTableName(entityType.ClrType.Name.ToSnakeCase());
             }
 
-            #endregion Table prefix
+            #endregion table prefix
 
             #region soft delete filter
 
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes()
+                .Where(t => typeof(ISoftDelete).IsAssignableFrom(t.ClrType)))
             {
-                if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
-                {
-                    entityType.AddSoftDeleteQueryFilter();
-                }
+                //Expression<Func<ISoftDelete, bool>> filter = x => !x.SoftDeleted;
+                //entityType.SetQueryFilter(filter);
+                entityType.AddSoftDeleteQueryFilter();
             }
 
             #endregion soft delete filter

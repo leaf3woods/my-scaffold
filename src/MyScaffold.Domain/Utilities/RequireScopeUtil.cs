@@ -11,17 +11,16 @@ namespace MyScaffold.Domain.Utilities
         {
             Scopes = Assembly.Load("MyScaffold." + nameof(Application)).GetTypes()
                 .Where(type => type.Namespace == "MyScaffold." + nameof(Application) + ".Services")
-                .SelectMany(rqt => rqt.GetMethods().Select(m => m.GetCustomAttribute<ScopeDefinitionAttribute>()).Append(rqt.GetCustomAttribute<ScopeDefinitionAttribute>()))
-                .Select(attribute =>
+                .SelectMany(rqt => rqt.GetMethods()
+                    .Select(m => (typeName: rqt.Name, attribute: m.GetCustomAttribute<ScopeDefinitionAttribute>()))
+                    .Append((typeName: rqt.Name, attribute: rqt.GetCustomAttribute<ScopeDefinitionAttribute>())))
+                .Where(t => t.attribute is not null)
+                .Select(tuple => new ScopeDefinition
                 {
-                    return attribute is null ? null :
-                    new ScopeDefinition
-                    {
-                        Name = attribute!.Name,
-                        Description = attribute!.Description
-                    };
+                    Name = tuple.attribute!.Name,
+                    Description = tuple.attribute!.Description
                 })
-                .Where(s => s is not null).Select(s => s!).ToArray();
+                .ToArray();
         }
 
         public static bool IsExist(string scopeName) => Scopes.Any(s => s.Name == scopeName);
