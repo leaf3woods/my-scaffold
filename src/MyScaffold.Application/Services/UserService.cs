@@ -7,12 +7,12 @@ using MyScaffold.Application.Utilities;
 using MyScaffold.Core;
 using MyScaffold.Core.Exceptions;
 using MyScaffold.Core.Utilities;
-using MyScaffold.Domain.Entities;
 using MyScaffold.Domain.Services;
 using MyScaffold.Domain.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using MyScaffold.Infrastructure.DbContexts;
+using MyScaffold.Domain.Entities.Login;
 
 namespace MyScaffold.Application.Services
 {

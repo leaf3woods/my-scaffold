@@ -1,4 +1,4 @@
-﻿using MyScaffold.Domain.Entities;
+﻿using MyScaffold.Domain.Entities.Login;
 
 namespace MyScaffold.Domain.Services
 {

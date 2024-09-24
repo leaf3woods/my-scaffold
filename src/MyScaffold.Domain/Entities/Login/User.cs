@@ -1,7 +1,7 @@
 ﻿using MyScaffold.Domain.Entities.Base;
 using MyScaffold.Domain.ValueObjects.UserValue;
 
-namespace MyScaffold.Domain.Entities
+namespace MyScaffold.Domain.Entities.Login
 {
     public class User : UniversalEntity, ISoftDelete
     {

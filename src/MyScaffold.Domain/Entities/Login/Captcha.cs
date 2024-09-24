@@ -1,6 +1,6 @@
 ﻿using MyScaffold.Domain.Entities.Base;
 
-namespace MyScaffold.Domain.Entities
+namespace MyScaffold.Domain.Entities.Login
 {
     public class Captcha : UniversalEntity
     {

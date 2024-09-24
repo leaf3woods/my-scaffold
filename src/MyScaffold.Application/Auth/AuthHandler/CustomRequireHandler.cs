@@ -1,9 +1,9 @@
 ﻿using MyScaffold.Application.Auth.Requirements;
 using MyScaffold.Application.Services.Base;
 using MyScaffold.Core;
-using MyScaffold.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using MyScaffold.Domain.Entities.Login;
 
 
 namespace BcsJiaer.Application.Auth.AuthHandler

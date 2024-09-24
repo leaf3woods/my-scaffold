@@ -1,4 +1,4 @@
-﻿using MyScaffold.Domain.Entities;
+﻿using MyScaffold.Domain.Entities.Login;
 using System.Security.Cryptography;
 using System.Text;
 

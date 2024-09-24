@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MyScaffold.Application.Dtos;
-using MyScaffold.Domain.Entities;
+using MyScaffold.Domain.Entities.Login;
 using MyScaffold.Domain.Utilities;
 using MyScaffold.Domain.ValueObjects.UserValue;
 

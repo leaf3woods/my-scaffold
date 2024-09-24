@@ -2,7 +2,7 @@
 
 namespace MyScaffold.Application.Services.Base
 {
-    public interface IRoleService
+    public interface IRoleService : IBaseService
     {
         public Task<RoleReadDto?> GetRoleAsync(Guid id);
 

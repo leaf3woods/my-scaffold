@@ -1,6 +1,6 @@
 ﻿namespace MyScaffold.Application.Services.Base
 {
-    public interface ISettingService
+    public interface ISettingService : IBaseService
     {
     }
 }

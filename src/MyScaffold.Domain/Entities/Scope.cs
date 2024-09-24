@@ -1,5 +1,6 @@
 ﻿using MyScaffold.Application.Auth;
 using MyScaffold.Domain.Entities.Base;
+using MyScaffold.Domain.Entities.Login;
 using MyScaffold.Domain.Utilities;
 
 namespace MyScaffold.Domain.Entities

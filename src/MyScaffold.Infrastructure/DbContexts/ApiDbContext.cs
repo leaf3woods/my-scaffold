@@ -2,6 +2,8 @@
 using MyScaffold.Domain.Entities.Base;
 using Microsoft.EntityFrameworkCore;
 using CaseExtensions;
+using MyScaffold.Domain.Entities.Login;
+using MyScaffold.Domain.Entities.Menus;
 
 namespace MyScaffold.Infrastructure.DbContexts
 {
@@ -81,6 +83,11 @@ namespace MyScaffold.Infrastructure.DbContexts
                 .WithOne(b => b.Role)
                 .HasForeignKey(b => b.RoleId);
 
+            modelBuilder.Entity<Role>()
+                .HasMany(r => r.Menus)
+                .WithMany()
+                .UsingEntity<RoleMenu>();
+
             #endregion role
 
             #region scope
@@ -109,6 +116,13 @@ namespace MyScaffold.Infrastructure.DbContexts
                 .OwnsOne(u => u.Detail);
 
             #endregion user
+
+            #region menu
+
+            modelBuilder.Entity<Menu>()
+                .HasIndex(m => m.Order);
+
+            #endregion
 
             #endregion entities initialize
         }

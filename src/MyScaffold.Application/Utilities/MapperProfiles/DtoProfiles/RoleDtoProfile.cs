@@ -2,6 +2,7 @@
 using MyScaffold.Application.Dtos;
 using MyScaffold.Core;
 using MyScaffold.Domain.Entities;
+using MyScaffold.Domain.Entities.Login;
 
 namespace MyScaffold.Application.Utilities.MapperProfiles.DtoProfiles
 {

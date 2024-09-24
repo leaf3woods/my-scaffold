@@ -1,5 +1,5 @@
 ﻿using MyScaffold.Core;
-using MyScaffold.Domain.Entities;
+using MyScaffold.Domain.Entities.Login;
 using MyScaffold.Domain.Services;
 using MyScaffold.Domain.Utilities;
 using StackExchange.Redis;

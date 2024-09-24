@@ -1,6 +1,7 @@
 ﻿using MyScaffold.Domain.Entities.Base;
+using MyScaffold.Domain.Entities.Menus;
 
-namespace MyScaffold.Domain.Entities
+namespace MyScaffold.Domain.Entities.Login
 {
     public class Role : UniversalEntity, ISoftDelete
     {
@@ -11,6 +12,8 @@ namespace MyScaffold.Domain.Entities
 
         public virtual ICollection<Scope>? Scopes { get; set; }
         public virtual ICollection<User>? Users { get; set; }
+
+        public ICollection<Menu>? Menus { get; set; }
 
         #endregion navigation
 

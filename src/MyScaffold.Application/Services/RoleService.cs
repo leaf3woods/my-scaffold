@@ -2,10 +2,10 @@
 using MyScaffold.Application.Dtos;
 using MyScaffold.Application.Services.Base;
 using MyScaffold.Core.Exceptions;
-using MyScaffold.Domain.Entities;
 using MyScaffold.Domain.Utilities;
 using Microsoft.EntityFrameworkCore;
 using MyScaffold.Infrastructure.DbContexts;
+using MyScaffold.Domain.Entities.Login;
 
 namespace MyScaffold.Application.Services
 {
