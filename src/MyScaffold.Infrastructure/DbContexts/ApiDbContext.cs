@@ -123,6 +123,19 @@ namespace MyScaffold.Infrastructure.DbContexts
             modelBuilder.Entity<Menu>()
                 .HasIndex(m => m.Order);
 
+            modelBuilder.Entity<Menu>()
+                .HasOne(m => m.Parent)
+                .WithMany()
+                .HasForeignKey(m => m.ParentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Menu>()
+                .HasData(Menu.Seeds);
+
+            modelBuilder.Entity<Menu>()
+                .HasIndex(m => m.Code)
+                .IsUnique();
+
             #endregion
 
             #endregion entities initialize

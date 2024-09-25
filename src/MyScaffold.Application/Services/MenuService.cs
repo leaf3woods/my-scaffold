@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyScaffold.Application.Dtos;
 using MyScaffold.Application.Services.Base;
+using MyScaffold.Core.Exceptions;
 using MyScaffold.Infrastructure.DbContexts;
 
 namespace MyScaffold.Application.Services
@@ -33,10 +34,34 @@ namespace MyScaffold.Application.Services
                     .Where(m => m.ParentId == parent.Id)
                     .Select(m => AsTree(m));
                 return parent;
-            }      
+            }
         }
 
-        public Task<int> SetMenuRoute()
+        public Task<int> SetMenuRouteAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<int> DeleteMenuAsync(Guid id, bool force)
+        {
+            var count = 0;
+            var menu = await _dbContext.Menus
+                .FindAsync(id) ?? throw new NotFoundException("id not exist");
+
+            if (menu.ParentId is null) throw new NotAcceptableException("root menu con't delete");
+
+            if (force)
+            {
+                count = await _dbContext.Menus.Where(m => m.Id == id).ExecuteDeleteAsync();
+            }
+            else if(await _dbContext.Menus.AnyAsync(m => m.ParentId == id))
+            {
+                throw new NotAcceptableException("child menu exist");
+            }
+            return count;
+        }
+
+        public Task<MenuReadDto> CreateMenuAsync(MenuCreateDto dto)
         {
             throw new NotImplementedException();
         }

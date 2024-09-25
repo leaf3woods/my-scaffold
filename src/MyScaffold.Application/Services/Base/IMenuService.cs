@@ -9,6 +9,10 @@ namespace MyScaffold.Application.Services.Base
 
         Task<IEnumerable<MenuReadDto>> GetRootMenusAsTreeAsync();
 
-        Task<int> SetMenuRoute();
+        Task<int> DeleteMenuAsync(Guid id, bool force);
+
+        Task<MenuReadDto> CreateMenuAsync(MenuCreateDto dto);
+
+        Task<int> SetMenuRouteAsync();
     }
 }

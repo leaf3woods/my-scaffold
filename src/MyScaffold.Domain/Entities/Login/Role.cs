@@ -70,14 +70,14 @@ namespace MyScaffold.Domain.Entities.Login
 
         #endregion static roles
 
-        public static Role[] Seeds { get; } = new Role[]
-        {
+        public static Role[] Seeds { get; } =
+        [
             DevRole,
             SuperRole,
             AdminRole,
             VipRole,
             MemberRole,
             VisitorRole
-        };
+        ];
     }
 }
