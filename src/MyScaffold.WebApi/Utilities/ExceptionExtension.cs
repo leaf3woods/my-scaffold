@@ -9,18 +9,18 @@ namespace MyScaffold.WebApi.Exceptions
     {
         public static ExceptionReadDto Localize(this Exception exception, IStringLocalizer stringLocalizer)
         {
-            var index = exception.Message.IndexOf('\r');
             var result = exception switch
             {
-                NotFoundException or NotAcceptableException or ForbiddenException => new ExceptionReadDto() { Info = stringLocalizer[(exception as CustomException)!.ExceptionCode] },
+                NotFoundException or NotAcceptableException or ForbiddenException =>
+                    new ExceptionReadDto() { Info = stringLocalizer[(exception as CustomException)!.ExceptionCode] },
                 _ => SettingUtil.IsDevelopment ? new ExceptionReadDto
                 {
-                    Info = exception.Message,
-                    StackTrace = exception.StackTrace,
-                    Inner = exception.InnerException?.Message
+                    Info = exception.Message.Split("\r\n", StringSplitOptions.TrimEntries)[0],
+                    StackTrace = exception.StackTrace?.Split("\r\n", StringSplitOptions.TrimEntries)[0],
+                    Inner = exception.InnerException?.Message.Split("\r\n", StringSplitOptions.TrimEntries)[0]
                 } : new ExceptionReadDto
                 {
-                    Info = index == -1 ? exception.Message : exception.Message[..index],
+                    Info = exception.Message.Split("\r\n", StringSplitOptions.TrimEntries)[0],
                     StackTrace = null,
                     Inner = null
                 }

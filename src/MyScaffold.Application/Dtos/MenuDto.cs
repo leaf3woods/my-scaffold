@@ -17,6 +17,8 @@ namespace MyScaffold.Application.Dtos
 
         public int Order { get; set; }
 
+        public int Level { get; set; }
+
         public string Path { get; set; } = null!;
 
         public string IconUrl { get; set; } = null!;

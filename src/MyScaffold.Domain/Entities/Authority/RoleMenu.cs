@@ -7,10 +7,10 @@ namespace MyScaffold.Domain.Entities.Authority
     {
         public Guid MenuId { get; set; }
 
-        public Menu? Menu { get; set; }
+        public Menu Menu { get; set; } = null!;
 
-        public Guid RoleId {  get; set; }
+        public Guid RoleId { get; set; }
 
-        public Role? Role { get; set; }
+        public Role Role { get; set; } = null!;
     }
 }

@@ -16,6 +16,8 @@ namespace MyScaffold.Domain.Entities.Authority
 
         public int Order { get; set; } = -1;
 
+        public int Level { get; set; }
+
         public string Path { get; set; } = null!;
 
         public string? IconUrl { get; set; }

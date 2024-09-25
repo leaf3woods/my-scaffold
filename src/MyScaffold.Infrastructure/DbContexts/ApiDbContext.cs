@@ -136,6 +136,16 @@ namespace MyScaffold.Infrastructure.DbContexts
                 .HasIndex(m => m.Code)
                 .IsUnique();
 
+            modelBuilder.Entity<RoleMenu>()
+                .HasOne(rm => rm.Menu)
+                .WithMany()
+                .HasForeignKey(rm => rm.MenuId);
+
+            modelBuilder.Entity<RoleMenu>()
+                .HasOne(rm => rm.Role)
+                .WithMany()
+                .HasForeignKey(rm => rm.RoleId);
+
             #endregion
 
             #endregion entities initialize
