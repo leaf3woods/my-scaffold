@@ -33,6 +33,7 @@ namespace MyScaffold.Application.Services
                 parent.Children = menus
                     .Where(m => m.ParentId == parent.Id)
                     .OrderBy(m => m.Order)
+                    .ThenBy(m => m.Level)
                     .Select(m => AsTree(m));
                 return parent;
             }

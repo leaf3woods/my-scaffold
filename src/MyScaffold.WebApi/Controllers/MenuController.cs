@@ -42,7 +42,7 @@ namespace MyScaffold.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ResponseWrapper<int>> DeleteMenu(Guid id, bool force = false) =>
-            (await _menuService.DeleteMenuAsync(id, false)).Wrap();
+            (await _menuService.DeleteMenuAsync(id, force)).Wrap();
 
         /// <summary>
         ///     添加菜单
